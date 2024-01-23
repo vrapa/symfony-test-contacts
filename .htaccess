@@ -1,0 +1,5 @@
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^(www\.)?stc.local$
+RewriteRule ^$ public/ [L]
+RewriteCond %{HTTP_HOST} ^(www\.)?stc.local$
+RewriteRule (.*) public/$1 [L]
