@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nový kontakt{% endblock %}
+
+{% block body %}
+<h1>Nový kontakt</h1>
+
+    <a href="{{ path('contact_list')}}">Zpět na seznam</a>
+
+    {{ form_start(contactForm, {'attr': {'novalidate': 'novalidate'}}) }}
+    {#
+        Pokud chcete i frontend validaci, tak použijte toto:
+        {{ form_start(contactForm) }}
+    #}
+
+
+    {{ form_start(contactForm, {'attr': {'novalidate': 'novalidate'}}) }}
+    {{ form_widget(contactForm) }}
+    {{ form_end(contactForm) }}
+
+{% endblock %}

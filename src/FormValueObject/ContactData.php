@@ -11,12 +11,12 @@ class ContactData
     #[Assert\NotBlank(message: "Příjmení je povinná položka")]
     public ?string $surname;
 
-    public ?string $phone;
+    public ?string $phone = null;
 
     #[Assert\NotBlank(message: "Mail je povinná položka")]
     #[Assert\Email(message: "Formát mailu je chybný")]
     public ?string $mail;
 
     #[Assert\Length(max: 255, maxMessage: "Maximální délka poznámky je {{ limit }} znaků")]
-    public ?string $note;
+    public ?string $note = null;
 }

@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\Contacts;
 use App\Repository\ContactsRepository;
 use App\Service\ContactService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -77,6 +78,33 @@ class ContactsController extends AbstractController
             'contact' => $contact,
         ]);
     }
+
+    #[Route('/create', name: 'contact_create')]
+    public function contactCreate(Request $request): Response
+    {
+        $contactForm = $this->contactService->getContactForm();
+        $contactForm->handleRequest($request);
+
+        if ($contactForm->isSubmitted() && $contactForm->isValid()) {
+            $contactData = $contactForm->getData();
+            $contact = new Contacts();
+            $contact->setName($contactData->name);
+            $contact->setSurname($contactData->surname);
+            $contact->setTelefon($contactData->phone);
+            $contact->setEmail($contactData->mail);
+            $contact->setNote($contactData->note);
+
+            $this->entityManager->persist($contact);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Kontakt byl úspěšně přidán');
+            return $this->redirectToRoute('contact_list');
+        }
+
+        return $this->render('contacts/create.html.twig', [
+            'contactForm' => $contactForm->createView(),
+        ]);
+    }
+
 
 
     #[Route('/delete/{id}', name: 'delete_item', methods:['POST'])]
