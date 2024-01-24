@@ -9,7 +9,7 @@ Instalace aplikace
 4. Upravit připojení k databázi v souboru .env
 5. Vytvořit databázi pomocí příkazu `php bin/console doctrine:database:create`
 6. Vytvořit tabulky pomocí příkazu `php bin/console doctrine:schema:update --force`
-6. Vytvořit repository pomocí příkazu `php bin/console doctrine:migrations:diff`
+6. Vytvořit fake data pomocí migrace `php bin/console doctrine:migrations:migrate`
 
 
 
