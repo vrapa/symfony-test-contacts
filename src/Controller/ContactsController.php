@@ -1,9 +1,9 @@
 <?php
-// src/Controller/LuckyController.php
 namespace App\Controller;
 
 use App\Repository\ContactsRepository;
 use App\Service\ContactService;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,11 +19,12 @@ class ContactsController extends AbstractController
     public function __construct(
         private readonly ContactService $contactService,
         private readonly ContactsRepository $contactsRepository,
+        private readonly EntityManagerInterface $entityManager
     )
     {
     }
 
-    #[Route('/')]
+    #[Route('/', name: 'contact_list')]
     public function contactList(Request $request, PaginatorInterface $paginator, SluggerInterface $slugger): Response
     {
         $queryBuilder = $this->contactsRepository->createQueryBuilder('c');
@@ -40,7 +41,7 @@ class ContactsController extends AbstractController
     }
 
     #[Route('/{id}-{slug}', name: 'contact_edit', requirements: ['id' => '\d+', 'slug' => '[a-z0-9-]+'])]
-    public function contactEdit(int $id, string $slug, SluggerInterface $slugger): Response
+    public function contactEdit(Request $request, int $id, string $slug, SluggerInterface $slugger): Response
     {
         $contact = $this->contactsRepository->find($id);
 
@@ -54,8 +55,41 @@ class ContactsController extends AbstractController
             ]);
         }
 
+        $contactForm = $this->contactService->getContactForm($id);
+        $contactForm->handleRequest($request);
+
+        if ($contactForm->isSubmitted() && $contactForm->isValid()) {
+            $contactData = $contactForm->getData();
+            $contact->setName($contactData->name);
+            $contact->setSurname($contactData->surname);
+            $contact->setTelefon($contactData->phone);
+            $contact->setEmail($contactData->mail);
+            $contact->setNote($contactData->note);
+
+            $this->entityManager->persist($contact);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Kontakt byl úspěšně uložen');
+            return $this->redirectToRoute('contact_list');
+        }
+
         return $this->render('contacts/edit.html.twig', [
+            'contactForm' => $contactForm->createView(),
+            'contact' => $contact,
         ]);
+    }
+
+
+    #[Route('/delete/{id}', name: 'delete_item', methods:['POST'])]
+
+    public function delete(int $id): Response
+    {
+        $contact = $this->contactsRepository->find($id);
+        $this->entityManager->remove($contact);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Kontakt byl úspěšně smazán');
+        // Přesměrování po úspěšném smazání
+        return $this->redirectToRoute('contact_list');
     }
 
 
