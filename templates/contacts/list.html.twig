@@ -1,8 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editace kontaktu{% endblock %}
+
+{% block body %}
+
 <h1>Seznam kontaktů</h1>
 
+<table>
+    <tr>
+        <th>Jméno</th>
+        <th>Příjmení</th>
+        <th>Telefon</th>
+        <th>E-mail</th>
+        <th>Poznámka</th>
+        <th>Upravit</th>
+    </tr>
 {% for item in pagination %}
     {# Vykreslení položky #}
+    <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.surname }}</td>
+        <td>{{ item.telefon }}</td>
+        <td>{{ item.email }}</td>
+        <td>{{ item.note }}</td>
+        <td>
+            {# V šabloně Twig #}
+            <a href="{{ path('contact_edit', { id: item.id, slug: slugger.slug(item.name)|lower }) }}">Upravit</a>
+
+        </td>
+    </tr>
 {% endfor %}
+</table>
 
 {# Vykreslení ovládacích prvků stránkování #}
 {{ knp_pagination_render(pagination) }}
+
+{% endblock %}
