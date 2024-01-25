@@ -1,40 +1,122 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Editace kontaktu{% endblock %}
+{% block title %}Seznam kontaktu{% endblock %}
 
 {% block body %}
 
-<h1>Seznam kontaktů</h1>
+    <h1>Seznam kontaktů</h1>
 
-<a href="{{ path('contact_create')}}">Nový kontakt</a>
+    <a href="{{ path('contact_create') }}">Nový kontakt</a>
 
-<table>
-    <tr>
-        <th>Jméno</th>
-        <th>Příjmení</th>
-        <th>Telefon</th>
-        <th>E-mail</th>
-        <th>Poznámka</th>
-        <th>Upravit</th>
-    </tr>
-{% for item in pagination %}
-    {# Vykreslení položky #}
-    <tr>
-        <td>{{ item.name }}</td>
-        <td>{{ item.surname }}</td>
-        <td>{{ item.telefon }}</td>
-        <td>{{ item.email }}</td>
-        <td>{{ item.note }}</td>
-        <td>
-            {# V šabloně Twig #}
-            <a href="{{ path('contact_edit', { id: item.id, slug: slugger.slug(item.name)|lower }) }}">Upravit</a>
+    <table>
+        <tr>
+            <th>Jméno</th>
+            <th>Příjmení</th>
+            <th>Telefon</th>
+            <th>E-mail</th>
+            <th>Poznámka</th>
+            <th>Upravit</th>
+        </tr>
+        {% for item in pagination %}
+            {# Vykreslení položky #}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.surname }}</td>
+                <td>{{ item.telefon }}</td>
+                <td>{{ item.email }}</td>
+                <td>
+                    <!-- Tlačítko pro otevření popup okna -->
+                    <button class="openPopupButton" data-popup-target="#popup-{{ item.id }}">Poznámka</button>
 
-        </td>
-    </tr>
-{% endfor %}
-</table>
+                    <div id="popup-{{ item.id }}" class="popup">
+                        <div class="popup-content">
+                            <p>Poznámka:{{ item.note }}</p>
+                            <button class="closeButton">Zavřít</button>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    {# V šabloně Twig #}
+                    <a href="{{ path('contact_edit', { id: item.id, slug: slugger.slug(item.name)|lower }) }}">Upravit</a>
 
-{# Vykreslení ovládacích prvků stránkování #}
-{{ knp_pagination_render(pagination) }}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    {# Vykreslení ovládacích prvků stránkování #}
+    {{ knp_pagination_render(pagination) }}
+
+
+    <style>
+        /* Styl pro popup okno */
+        .popup {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4); /* Černé pozadí s průhledností */
+        }
+
+        /* Styl pro obsah popup okna */
+        .popup-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        /* Styl pro zavírací tlačítko */
+        .closeButton {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .closeButton:hover,
+        .closeButton:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            var popups = document.querySelectorAll('.popup');
+            var openButtons = document.querySelectorAll('.openPopupButton');
+            var closeButtons = document.querySelectorAll('.popup .closeButton');
+
+            // Funkce pro otevření popup okna
+            openButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    var popup = document.querySelector(this.dataset.popupTarget);
+                    popup.style.display = 'block';
+                });
+            });
+
+            // Funkce pro zavření popup okna
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    var popup = this.closest('.popup');
+                    popup.style.display = 'none';
+                });
+            });
+
+            // Zavření popup okna při kliknutí mimo něj
+            window.addEventListener('click', function (event) {
+                popups.forEach(popup => {
+                    if (event.target == popup) {
+                        popup.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+    </script>
 
 {% endblock %}

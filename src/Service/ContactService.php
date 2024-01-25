@@ -10,10 +10,8 @@ use Symfony\Component\Form\FormInterface;
 
 class ContactService
 {
-
-
     public function __construct(
-        private readonly ContactsRepository $contactsRepository,
+        private readonly ContactsRepository   $contactsRepository,
         private readonly FormFactoryInterface $formFactory
     ) {
     }
@@ -27,7 +25,6 @@ class ContactService
             'csrf_protection' => false,
         ]);
     }
-
 
     private function getFormContactData(int $id): ContactData
     {

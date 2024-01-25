@@ -3,14 +3,14 @@
 {% block title %}Editace kontaktu{% endblock %}
 
 {% block body %}
-<h1>Editace kontaktu</h1>
+    <h1>Editace kontaktu</h1>
 
-    <a href="{{ path('contact_list')}}">Zpět na seznam</a>
+    <a href="{{ path('contact_list') }}">Zpět na seznam</a>
 
     {{ form_start(contactForm, {'attr': {'novalidate': 'novalidate'}}) }}
     {#
-        Pokud chcete i frontend validaci, tak použijte toto:
-        {{ form_start(contactForm) }}
+    Pokud chcete i frontend validaci, tak použijte toto:
+    {{ form_start(contactForm) }}
     #}
 
 
@@ -18,7 +18,8 @@
     {{ form_widget(contactForm) }}
     {{ form_end(contactForm) }}
 
-    <form action="{{ path('delete_item', {'id': contact.id}) }}" method="post" onsubmit="return confirm('Opravdu chcete smazat tento záznam?');">
+    <form action="{{ path('delete_item', {'id': contact.id}) }}" method="post"
+          onsubmit="return confirm('Opravdu chcete smazat tento záznam?');">
         <input type="hidden" name="_method" value="POST">
         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ contact.id) }}">
         <button type="submit">Smazat</button>
