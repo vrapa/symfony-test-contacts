@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repository;
 
 use App\Entity\Contacts;
@@ -17,7 +18,4 @@ class ContactsRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Contacts::class);
     }
-
-
-
 }

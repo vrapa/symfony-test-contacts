@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\Contacts;
@@ -20,21 +21,15 @@ class ContactsController extends AbstractController
     public function __construct(
         private readonly ContactService $contactService,
         private readonly ContactsRepository $contactsRepository,
-        private readonly EntityManagerInterface $entityManager
-    )
-    {
+        private readonly EntityManagerInterface $entityManager,
+    ) {
     }
 
     #[Route('/', name: 'contact_list')]
     public function contactList(Request $request, PaginatorInterface $paginator, SluggerInterface $slugger): Response
     {
         $queryBuilder = $this->contactsRepository->createQueryBuilder('c');
-        $pagination = $paginator->paginate(
-            $queryBuilder,
-            $request->query->getInt('page', 1),
-            self::CONTACTS_PER_PAGE
-        );
-
+        $pagination = $paginator->paginate($queryBuilder, $request->query->getInt('page', 1), self::CONTACTS_PER_PAGE);
         return $this->render('contacts/list.html.twig', [
             'pagination' => $pagination,
             'slugger' => $slugger,
@@ -45,10 +40,8 @@ class ContactsController extends AbstractController
     public function contactEdit(Request $request, int $id, string $slug, SluggerInterface $slugger): Response
     {
         $contact = $this->contactsRepository->find($id);
-
-        // Kontrola, zda slug odpovídá kontaktu
+// Kontrola, zda slug odpovídá kontaktu
         $expectedSlug = $slugger->slug($contact->getName())->lower();
-
         if ($slug !== (string)$expectedSlug) {
             return $this->redirectToRoute('contact_edit', [
                 'id' => $id,
@@ -58,7 +51,6 @@ class ContactsController extends AbstractController
 
         $contactForm = $this->contactService->getContactForm($id);
         $contactForm->handleRequest($request);
-
         if ($contactForm->isSubmitted() && $contactForm->isValid()) {
             $contactData = $contactForm->getData();
             $contact->setName($contactData->name);
@@ -66,7 +58,6 @@ class ContactsController extends AbstractController
             $contact->setTelefon($contactData->phone);
             $contact->setEmail($contactData->mail);
             $contact->setNote($contactData->note);
-
             $this->entityManager->persist($contact);
             $this->entityManager->flush();
             $this->addFlash('success', 'Kontakt byl úspěšně uložen');
@@ -84,7 +75,6 @@ class ContactsController extends AbstractController
     {
         $contactForm = $this->contactService->getContactForm();
         $contactForm->handleRequest($request);
-
         if ($contactForm->isSubmitted() && $contactForm->isValid()) {
             $contactData = $contactForm->getData();
             $contact = new Contacts();
@@ -93,7 +83,6 @@ class ContactsController extends AbstractController
             $contact->setTelefon($contactData->phone);
             $contact->setEmail($contactData->mail);
             $contact->setNote($contactData->note);
-
             $this->entityManager->persist($contact);
             $this->entityManager->flush();
             $this->addFlash('success', 'Kontakt byl úspěšně přidán');
@@ -114,11 +103,8 @@ class ContactsController extends AbstractController
         $contact = $this->contactsRepository->find($id);
         $this->entityManager->remove($contact);
         $this->entityManager->flush();
-
         $this->addFlash('success', 'Kontakt byl úspěšně smazán');
-        // Přesměrování po úspěšném smazání
+// Přesměrování po úspěšném smazání
         return $this->redirectToRoute('contact_list');
     }
-
-
 }

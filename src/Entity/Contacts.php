@@ -123,5 +123,4 @@ class Contacts
     {
         $this->note = $note;
     }
-
 }

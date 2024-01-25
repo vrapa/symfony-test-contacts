@@ -11,7 +11,7 @@ use Symfony\Component\Form\FormInterface;
 class ContactService
 {
     public function __construct(
-        private readonly ContactsRepository   $contactsRepository,
+        private readonly ContactsRepository $contactsRepository,
         private readonly FormFactoryInterface $formFactory
     ) {
     }
